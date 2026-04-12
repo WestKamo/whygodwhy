@@ -332,5 +332,6 @@ const homeBtnStyle: React.CSSProperties = {
   letterSpacing: '4px', 
   cursor: 'pointer', 
   borderRadius: '50px', 
-  color: '#b39359' 
+  color: '#b39359',
+  textAlign: 'center'
 };
