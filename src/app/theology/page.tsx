@@ -314,21 +314,10 @@ export default function TheologyPage() {
 }
 
 // STYLES
+// STYLES - Notice the "as React.CSSProperties" at the end of the objects
 const tooltipBoxStyle: React.CSSProperties = { position: 'absolute', bottom: '130%', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#fff', color: '#333', padding: '20px', borderRadius: '15px', width: '280px', boxShadow: '0 20px 50px rgba(0,0,0,0.15)', border: '1px solid #f0f0eb', fontSize: '14px', lineHeight: '1.6', zIndex: 10000000, fontWeight: 'normal', fontStyle: 'italic', pointerEvents: 'none', textAlign: 'left', display: 'block' };
-const masterOverlayStyle = { position: 'fixed' as const, inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.98)', zIndex: 1000000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', backdropFilter: 'blur(15px)' };
-const editorBubbleStyle = { backgroundColor: '#fff', width: '100%', maxWidth: '850px', borderRadius: '40px', boxShadow: '0 50px 100px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', maxHeight: '80vh', border: '1px solid rgba(179, 147, 89, 0.1)', overflow: 'hidden' };
-const footerStyle = { padding: '30px 60px 50px', display: 'flex', gap: '20px', borderTop: '1px solid #f5f5f0', backgroundColor: '#fff' };
-const alertOverlayStyle = { position: 'fixed' as const, inset: 0, backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 2000000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)' };
-const alertCardStyle = { backgroundColor: '#fff', padding: '40px', borderRadius: '30px', maxWidth: '380px', textAlign: 'center' as const, boxShadow: '0 20px 40px rgba(0,0,0,0.2)' };
-const closeAlertBtn = { marginTop: '20px', padding: '12px 30px', background: '#111', color: '#fff', border: 'none', borderRadius: '50px', fontWeight: 'bold', fontSize: '10px', cursor: 'pointer' };
-const actionBtn = { flex: 1, padding: '15px', border: 'none', borderRadius: '40px', color: '#fff', fontWeight: 'bold', cursor: 'pointer', fontSize: '10px' };
-const labelStyle = { display: 'block', fontSize: '10px', fontWeight: 'bold', letterSpacing: '2px', color: '#b39359', marginBottom: '10px' };
-const inputStyle = { width: '100%', padding: '15px 0', background: 'none', border: 'none', borderBottom: '1px solid #eee', fontSize: '18px', fontFamily: 'serif', outline: 'none' };
-const publishBtnStyle = { flex: 1, padding: '18px', background: '#111', color: '#fff', border: 'none', borderRadius: '50px', fontWeight: 'bold', letterSpacing: '2px', fontSize: '10px', cursor: 'pointer' };
-const readBubbleStyle = { maxWidth: '900px', width: '100%', maxHeight: '85vh', overflowY: 'auto' as const, padding: '100px 80px', backgroundColor: '#fdfcf8', borderRadius: '40px', boxShadow: '0 50px 100px rgba(0,0,0,0.1)' };
-const closeReadBtn = { display: 'block', margin: '80px 0 0 auto', background: '#111', color: '#fff', padding: '15px 40px', border: 'none', borderRadius: '50px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' };
-const homeBtnStyle = { display: 'block', margin: '0 auto 60px', background: '#fff', border: '1px solid #b39359', padding: '12px 30px', fontSize: '10px', fontWeight: 'bold', letterSpacing: '4px', cursor: 'pointer', borderRadius: '50px', color: '#b39359' };
-const composeBtnStyle = { padding: '16px 40px', background: '#111', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '11px', fontWeight: 'bold', letterSpacing: '3px', cursor: 'pointer' };
-const articleCardStyle = { padding: '60px', border: '1px solid #f0f0eb', backgroundColor: '#fff', cursor: 'pointer' };
-const miniBtn = { background: 'none', border: 'none', color: '#ccc', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' };
-const readBtnStyle = { background: 'none', border: 'none', color: '#111', fontWeight: 'bold', fontSize: '11px', letterSpacing: '2px', cursor: 'pointer' };
+const masterOverlayStyle: React.CSSProperties = { position: 'fixed', inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.98)', zIndex: 1000000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', backdropFilter: 'blur(15px)' };
+const editorBubbleStyle: React.CSSProperties = { backgroundColor: '#fff', width: '100%', maxWidth: '850px', borderRadius: '40px', boxShadow: '0 50px 100px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', maxHeight: '80vh', border: '1px solid rgba(179, 147, 89, 0.1)', overflow: 'hidden' };
+const footerStyle: React.CSSProperties = { padding: '30px 60px 50px', display: 'flex', gap: '20px', borderTop: '1px solid #f5f5f0', backgroundColor: '#fff' };
+const alertOverlayStyle: React.CSSProperties = { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 2000000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)' };
+const readBubbleStyle: React.CSSProperties = { maxWidth: '900px', width: '100%', maxHeight: '85vh', overflowY: 'auto', padding: '100px 80px', backgroundColor: '#fdfcf8', borderRadius: '40px', boxShadow: '0 50px 100px rgba(0,0,0,0.1)' };
