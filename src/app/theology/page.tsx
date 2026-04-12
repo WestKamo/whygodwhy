@@ -321,3 +321,16 @@ const editorBubbleStyle: React.CSSProperties = { backgroundColor: '#fff', width:
 const footerStyle: React.CSSProperties = { padding: '30px 60px 50px', display: 'flex', gap: '20px', borderTop: '1px solid #f5f5f0', backgroundColor: '#fff' };
 const alertOverlayStyle: React.CSSProperties = { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 2000000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)' };
 const readBubbleStyle: React.CSSProperties = { maxWidth: '900px', width: '100%', maxHeight: '85vh', overflowY: 'auto', padding: '100px 80px', backgroundColor: '#fdfcf8', borderRadius: '40px', boxShadow: '0 50px 100px rgba(0,0,0,0.1)' };
+const homeBtnStyle: React.CSSProperties = { 
+  display: 'block', 
+  margin: '0 auto 60px', 
+  background: '#fff', 
+  border: '1px solid #b39359', 
+  padding: '12px 30px', 
+  fontSize: '10px', 
+  fontWeight: 'bold', 
+  letterSpacing: '4px', 
+  cursor: 'pointer', 
+  borderRadius: '50px', 
+  color: '#b39359' 
+};
