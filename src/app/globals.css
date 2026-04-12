@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=Inter:wght@300;400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fdfcf8;
+  --gold: #b39359;
+  --ink: #111111;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Serif for our Brand */
+.font-serif-brand {
+  font-family: 'Bodoni Moda', serif;
+}
