@@ -73,7 +73,7 @@ export default function ThoughtsPage() {
           <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '1px solid #b39359', margin: '0 auto 25px' }}>
             <img src="/me.jpg" alt="Phindile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <h1 style={{ fontFamily: 'serif', fontSize: '56px', color: '#111' }}>Thoughts Too Heavy.</h1>
+          <h1 style={{ fontFamily: 'serif', fontSize: 'clamp(32px, 8vw, 56px)', color: '#111' }}>Thoughts Too Heavy.</h1>
           {isAdmin && <button onClick={() => setShowEditor(true)} style={writeBtnStyle}>+ WRITE FOR TODAY</button>}
         </header>
 
@@ -147,7 +147,6 @@ export default function ThoughtsPage() {
                 </div>
               </div>
 
-              {/* FOOTER BUTTONS - STICKY AT BOTTOM OF CARD */}
               <div style={editorFooter}>
                 <button onClick={() => { setShowEditor(false); setEditingId(null); setForm({title: "", content: "", img: ""}); }} style={cancelBtn}>DISCARD</button>
                 <button onClick={handlePublish} style={publishBtn}>{editingId ? "UPDATE ECHO" : "RELEASE THOUGHT"}</button>
@@ -157,15 +156,24 @@ export default function ThoughtsPage() {
         )}
       </AnimatePresence>
 
-      {/* --- READING BUBBLE --- */}
+      {/* --- UPDATED FULL-FLOW READING BUBBLE --- */}
       <AnimatePresence>
         {activeThought && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={bubbleBg}>
             <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={bubbleCard}>
-               <h1 style={{ fontFamily: 'serif', fontSize: '42px', marginBottom: '20px' }}>{activeThought.title}</h1>
-               <p style={{ fontSize: '19px', lineHeight: '1.9', fontFamily: 'serif' }}>{activeThought.content}</p>
-               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '40px' }}>
-                 <button onClick={() => setActiveThought(null)} style={returnBtn}>RETURN TO THOUGHTS →</button>
+               <h1 style={{ fontFamily: 'serif', fontSize: 'clamp(32px, 8vw, 42px)', marginBottom: '30px', color: '#111' }}>{activeThought.title}</h1>
+               
+               {/* Content Split for better mobile rendering */}
+               <div style={{ color: '#333' }}>
+                {activeThought.content.split('\n').map((para: string, i: number) => (
+                  <p key={i} style={{ fontSize: '19px', lineHeight: '1.9', fontFamily: 'serif', marginBottom: '25px' }}>
+                    {para}
+                  </p>
+                ))}
+               </div>
+               
+               <div style={{ display: 'flex', justifyContent: 'center', marginTop: '60px', paddingBottom: '40px' }}>
+                 <button onClick={() => setActiveThought(null)} style={returnBtn}>RETURN TO ORIGIN</button>
                </div>
             </motion.div>
           </motion.div>
@@ -190,15 +198,15 @@ export default function ThoughtsPage() {
   );
 }
 
-// --- UPDATED STYLES FOR SCROLLING & CLARITY ---
+// --- RESPONSIVE STYLES ---
 const editorCardStyle: React.CSSProperties = {
   backgroundColor: '#fdfcf8',
   width: '100%',
   maxWidth: '800px',
   maxHeight: '85vh',
-  overflowY: 'auto', // THIS ALLOWS SCROLLING
+  overflowY: 'auto', 
   borderRadius: '40px',
-  padding: '60px',
+  padding: 'clamp(20px, 5vw, 60px)',
   boxShadow: '0 50px 100px rgba(0,0,0,0.2)',
   position: 'relative',
   border: '1px solid rgba(179, 147, 89, 0.2)'
@@ -211,9 +219,10 @@ const editorFooter: React.CSSProperties = {
   marginTop: '40px',
   paddingTop: '20px',
   borderTop: '1px solid #f0f0eb',
-  position: 'sticky', // STICKS TO BOTTOM OF MODAL
+  position: 'sticky',
   bottom: 0,
-  backgroundColor: '#fdfcf8'
+  backgroundColor: '#fdfcf8',
+  zIndex: 10
 };
 
 const inputContainer: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '8px' };
@@ -226,7 +235,51 @@ const cancelBtn: React.CSSProperties = { background: 'none', border: 'none', col
 const writeBtnStyle = { marginTop: '20px', padding: '12px 30px', border: '1px solid #b39359', color: '#b39359', background: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '10px', letterSpacing: '2px', borderRadius: '50px' };
 const miniBtn = { background: 'none', border: 'none', color: '#ccc', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' };
 const btnStyle = { flex: 1, padding: '15px', background: '#111', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer', borderRadius: '40px', fontSize: '10px', letterSpacing: '2px' };
-const modalBg = { position: 'fixed', inset: 0, backgroundColor: 'rgba(17,17,17,0.4)', backdropFilter: 'blur(15px)', zIndex: 60000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' };
-const bubbleBg = { position: 'fixed', inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.98)', backdropFilter: 'blur(20px)', zIndex: 50000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' };
-const bubbleCard = { backgroundColor: '#fdfcf8', width: '100%', maxWidth: '850px', maxHeight: '90vh', borderRadius: '40px', padding: '60px', overflowY: 'auto' as const, boxShadow: '0 50px 100px rgba(179, 147, 89, 0.25)', border: '1px solid rgba(179, 147, 89, 0.1)' };
-const returnBtn = { background: '#111', color: '#fff', border: 'none', padding: '12px 28px', fontSize: '9px', fontWeight: 'bold', letterSpacing: '3px', cursor: 'pointer', borderRadius: '50px' };
+
+const modalBg: React.CSSProperties = { 
+  position: 'fixed', 
+  inset: 0, 
+  backgroundColor: 'rgba(17,17,17,0.4)', 
+  backdropFilter: 'blur(15px)', 
+  zIndex: 60000, 
+  display: 'flex', 
+  alignItems: 'center', 
+  justifyContent: 'center', 
+  padding: '20px' 
+};
+
+const bubbleBg: React.CSSProperties = { 
+  position: 'fixed', 
+  inset: 0, 
+  backgroundColor: 'rgba(253, 252, 248, 0.98)', 
+  backdropFilter: 'blur(20px)', 
+  zIndex: 50000, 
+  display: 'flex', 
+  justifyContent: 'center', 
+  alignItems: 'flex-start', // Allows scrolling from top
+  overflowY: 'auto', 
+  padding: '0' 
+};
+
+const bubbleCard: React.CSSProperties = { 
+  backgroundColor: '#fdfcf8', 
+  width: '100%', 
+  maxWidth: '900px', 
+  minHeight: '100vh', 
+  borderRadius: '0px', // Mobile feels better without curves on full-screen reading
+  padding: '120px clamp(20px, 5vw, 80px) 100px', 
+  boxShadow: 'none',
+  position: 'relative'
+};
+
+const returnBtn: React.CSSProperties = { 
+  background: '#111', 
+  color: '#fff', 
+  border: 'none', 
+  padding: '15px 40px', 
+  fontSize: '10px', 
+  fontWeight: 'bold', 
+  letterSpacing: '3px', 
+  cursor: 'pointer', 
+  borderRadius: '50px' 
+};
