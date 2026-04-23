@@ -7,10 +7,7 @@ import { createBrowserClient } from "@supabase/ssr";
 
 export default function ThoughtsPage() {
   const router = useRouter();
-
-  // --- ADMIN PERSISTENCE STATES ---
   const [isAdmin, setIsAdmin] = useState(false);
-
   const [thoughts, setThoughts] = useState<any[]>([]);
   const [activeThought, setActiveThought] = useState<any>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -23,26 +20,17 @@ export default function ThoughtsPage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // --- AUTH CHECK & PERSISTENCE ---
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email === "phindilesandi07@gmail.com") {
-        setIsAdmin(true);
-      }
+      if (user?.email === "phindilesandi07@gmail.com") setIsAdmin(true);
     };
-
     checkUser();
     fetchThoughts();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user?.email === "phindilesandi07@gmail.com") {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAdmin(session?.user?.email === "phindilesandi07@gmail.com");
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -74,7 +62,6 @@ export default function ThoughtsPage() {
       <Navbar />
       
       <main style={{ maxWidth: '800px', margin: '0 auto', padding: '160px 20px 100px' }}>
-        
         <button 
           onClick={() => router.push("/")}
           style={{ display: 'block', margin: '0 auto 60px', background: 'none', border: '1px solid #eee', padding: '10px 25px', fontSize: '9px', fontWeight: 'bold', letterSpacing: '3px', cursor: 'pointer', borderRadius: '20px', color: '#aaa' }}
@@ -87,26 +74,18 @@ export default function ThoughtsPage() {
             <img src="/me.jpg" alt="Phindile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <h1 style={{ fontFamily: 'serif', fontSize: '56px', color: '#111' }}>Thoughts Too Heavy.</h1>
-          
-          {/* GATED WRITE BUTTON */}
-          {isAdmin && (
-            <button onClick={() => setShowEditor(true)} style={writeBtnStyle}>+ WRITE FOR TODAY</button>
-          )}
+          {isAdmin && <button onClick={() => setShowEditor(true)} style={writeBtnStyle}>+ WRITE FOR TODAY</button>}
         </header>
 
-        {/* FEED */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
           {thoughts.map((t) => (
             <article key={t.id} style={{ borderBottom: '1px solid #f0f0eb', paddingBottom: '50px', position: 'relative' }}>
-              
-              {/* GATED ADMIN ACTIONS */}
               {isAdmin && (
                 <div style={{ position: 'absolute', top: 0, right: 0, display: 'flex', gap: '15px' }}>
                    <button onClick={() => { setForm({title: t.title, content: t.content, img: t.img}); setEditingId(t.id); setShowEditor(true); }} style={miniBtn}>EDIT</button>
                    <button onClick={() => setShowDeleteConfirm(t.id)} style={{ ...miniBtn, color: '#ff4444' }}>DELETE</button>
                 </div>
               )}
-
               <span style={{ fontSize: '9px', color: '#b39359', fontWeight: 'bold', letterSpacing: '3px' }}>
                 {new Date(t.created_at).toLocaleDateString().toUpperCase()} / {t.views || 0} EYEWITNESSES
               </span>
@@ -122,40 +101,70 @@ export default function ThoughtsPage() {
         </div>
       </main>
 
-      {/* DELETE CONFIRMATION POP-OUT (GATED) */}
+      {/* --- SCROLLABLE EDITOR MODAL --- */}
       <AnimatePresence>
-        {showDeleteConfirm && isAdmin && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={modalBg}
-          >
+        {showEditor && isAdmin && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={modalBg}>
             <motion.div 
-              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-              style={{ backgroundColor: '#fff', padding: '50px', borderRadius: '30px', textAlign: 'center', maxWidth: '400px', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
+              initial={{ y: 50, opacity: 0 }} 
+              animate={{ y: 0, opacity: 1 }} 
+              style={editorCardStyle}
             >
-              <div style={{ color: '#ff4444', fontSize: '30px', marginBottom: '20px' }}>⚠</div>
-              <h2 style={{ fontFamily: 'serif', fontSize: '24px', marginBottom: '10px' }}>Confirm the Silence?</h2>
-              <p style={{ fontSize: '14px', color: '#666', lineHeight: '1.6', marginBottom: '30px' }}>
-                Phindile, are you sure you want to delete this echo?
-              </p>
-              <div style={{ display: 'flex', gap: '15px' }}>
-                <button onClick={confirmDeletion} style={{ ...btnStyle, backgroundColor: '#ff4444' }}>PROCEED</button>
-                <button onClick={() => setShowDeleteConfirm(null)} style={{ ...btnStyle, backgroundColor: '#eee', color: '#111' }}>CANCEL</button>
+              <h2 style={{ fontFamily: 'serif', fontSize: '28px', marginBottom: '30px', color: '#111' }}>
+                {editingId ? "Refine the Echo" : "Capture a Thought"}
+              </h2>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={inputContainer}>
+                  <label style={labelStyle}>TITLE</label>
+                  <input 
+                    placeholder="What is this weight called?" 
+                    value={form.title} 
+                    onChange={e => setForm({...form, title: e.target.value})} 
+                    style={inputStyle} 
+                  />
+                </div>
+
+                <div style={inputContainer}>
+                  <label style={labelStyle}>CONTENT</label>
+                  <textarea 
+                    placeholder="Spill the truth here..." 
+                    rows={12} 
+                    value={form.content} 
+                    onChange={e => setForm({...form, content: e.target.value})} 
+                    style={{ ...inputStyle, resize: 'none' }} 
+                  />
+                </div>
+
+                <div style={inputContainer}>
+                  <label style={labelStyle}>VISUAL URL (OPTIONAL)</label>
+                  <input 
+                    placeholder="https://..." 
+                    value={form.img} 
+                    onChange={e => setForm({...form, img: e.target.value})} 
+                    style={inputStyle} 
+                  />
+                </div>
+              </div>
+
+              {/* FOOTER BUTTONS - STICKY AT BOTTOM OF CARD */}
+              <div style={editorFooter}>
+                <button onClick={() => { setShowEditor(false); setEditingId(null); setForm({title: "", content: "", img: ""}); }} style={cancelBtn}>DISCARD</button>
+                <button onClick={handlePublish} style={publishBtn}>{editingId ? "UPDATE ECHO" : "RELEASE THOUGHT"}</button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* FULL POST BUBBLE */}
+      {/* --- READING BUBBLE --- */}
       <AnimatePresence>
         {activeThought && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={bubbleBg}>
             <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={bubbleCard}>
                <h1 style={{ fontFamily: 'serif', fontSize: '42px', marginBottom: '20px' }}>{activeThought.title}</h1>
                <p style={{ fontSize: '19px', lineHeight: '1.9', fontFamily: 'serif' }}>{activeThought.content}</p>
-               
-               <div style={{ position: 'sticky', bottom: '0', display: 'flex', justifyContent: 'flex-end', marginTop: '40px' }}>
+               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '40px' }}>
                  <button onClick={() => setActiveThought(null)} style={returnBtn}>RETURN TO THOUGHTS →</button>
                </div>
             </motion.div>
@@ -163,17 +172,15 @@ export default function ThoughtsPage() {
         )}
       </AnimatePresence>
 
-      {/* EDITOR MODAL (GATED) */}
+      {/* --- DELETE CONFIRMATION --- */}
       <AnimatePresence>
-        {showEditor && isAdmin && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={modalBg}>
-            <div style={{ maxWidth: '600px', width: '90%', display: 'flex', flexDirection: 'column', gap: '20px', backgroundColor: '#fff', padding: '40px', borderRadius: '30px' }}>
-              <input placeholder="Title" value={form.title} onChange={e => setForm({...form, title: e.target.value})} style={inputStyle} />
-              <textarea placeholder="Content..." rows={8} value={form.content} onChange={e => setForm({...form, content: e.target.value})} style={inputStyle} />
-              <input placeholder="Image URL" value={form.img} onChange={e => setForm({...form, img: e.target.value})} style={inputStyle} />
-              <div style={{ display: 'flex', gap: '20px' }}>
-                <button onClick={handlePublish} style={btnStyle}>{editingId ? "UPDATE" : "PUBLISH"}</button>
-                <button onClick={() => { setShowEditor(false); setEditingId(null); }} style={{ ...btnStyle, background: '#eee', color: '#111' }}>CANCEL</button>
+        {showDeleteConfirm && isAdmin && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={modalBg}>
+            <div style={{ backgroundColor: '#fff', padding: '50px', borderRadius: '30px', textAlign: 'center', maxWidth: '400px' }}>
+              <h2 style={{ fontFamily: 'serif', fontSize: '24px' }}>Confirm the Silence?</h2>
+              <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
+                <button onClick={confirmDeletion} style={{ ...btnStyle, backgroundColor: '#ff4444' }}>DELETE</button>
+                <button onClick={() => setShowDeleteConfirm(null)} style={{ ...btnStyle, backgroundColor: '#eee', color: '#111' }}>CANCEL</button>
               </div>
             </div>
           </motion.div>
@@ -183,12 +190,43 @@ export default function ThoughtsPage() {
   );
 }
 
-// STYLES (Remaining identical for UI consistency)
-const writeBtnStyle = { marginTop: '20px', padding: '12px 30px', border: '1px solid #b39359', color: '#b39359', background: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '10px', letterSpacing: '2px' };
+// --- UPDATED STYLES FOR SCROLLING & CLARITY ---
+const editorCardStyle: React.CSSProperties = {
+  backgroundColor: '#fdfcf8',
+  width: '100%',
+  maxWidth: '800px',
+  maxHeight: '85vh',
+  overflowY: 'auto', // THIS ALLOWS SCROLLING
+  borderRadius: '40px',
+  padding: '60px',
+  boxShadow: '0 50px 100px rgba(0,0,0,0.2)',
+  position: 'relative',
+  border: '1px solid rgba(179, 147, 89, 0.2)'
+};
+
+const editorFooter: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: '20px',
+  marginTop: '40px',
+  paddingTop: '20px',
+  borderTop: '1px solid #f0f0eb',
+  position: 'sticky', // STICKS TO BOTTOM OF MODAL
+  bottom: 0,
+  backgroundColor: '#fdfcf8'
+};
+
+const inputContainer: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '8px' };
+const labelStyle: React.CSSProperties = { fontSize: '9px', fontWeight: 'bold', letterSpacing: '2px', color: '#b39359' };
+const inputStyle: React.CSSProperties = { padding: '20px', border: '1px solid #f0f0eb', background: '#fff', outline: 'none', fontFamily: 'serif', fontSize: '18px', borderRadius: '15px', width: '100%' };
+
+const publishBtn: React.CSSProperties = { padding: '15px 35px', background: '#111', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer', borderRadius: '50px', fontSize: '10px', letterSpacing: '2px' };
+const cancelBtn: React.CSSProperties = { background: 'none', border: 'none', color: '#aaa', fontWeight: 'bold', cursor: 'pointer', fontSize: '10px', letterSpacing: '2px' };
+
+const writeBtnStyle = { marginTop: '20px', padding: '12px 30px', border: '1px solid #b39359', color: '#b39359', background: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '10px', letterSpacing: '2px', borderRadius: '50px' };
 const miniBtn = { background: 'none', border: 'none', color: '#ccc', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer' };
-const inputStyle = { padding: '15px', border: '1px solid #eee', background: '#f9f9f9', outline: 'none', fontFamily: 'serif', fontSize: '16px', borderRadius: '10px' };
 const btnStyle = { flex: 1, padding: '15px', background: '#111', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer', borderRadius: '40px', fontSize: '10px', letterSpacing: '2px' };
-const modalBg = { position: 'fixed', inset: 0, backgroundColor: 'rgba(17,17,17,0.3)', backdropFilter: 'blur(10px)', zIndex: 60000, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const bubbleBg = { position: 'fixed', inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.95)', backdropFilter: 'blur(20px)', zIndex: 50000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' };
-const bubbleCard = { backgroundColor: '#fdfcf8', width: '100%', maxWidth: '850px', maxHeight: '90vh', borderRadius: '40px', padding: '60px', overflowY: 'auto', boxShadow: '0 50px 100px rgba(179, 147, 89, 0.25)', position: 'relative', border: '1px solid rgba(179, 147, 89, 0.1)' };
-const returnBtn = { background: '#111', color: '#fff', border: 'none', padding: '12px 28px', fontSize: '9px', fontWeight: 'bold', letterSpacing: '3px', cursor: 'pointer', borderRadius: '50px', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' };
+const modalBg = { position: 'fixed', inset: 0, backgroundColor: 'rgba(17,17,17,0.4)', backdropFilter: 'blur(15px)', zIndex: 60000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' };
+const bubbleBg = { position: 'fixed', inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.98)', backdropFilter: 'blur(20px)', zIndex: 50000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' };
+const bubbleCard = { backgroundColor: '#fdfcf8', width: '100%', maxWidth: '850px', maxHeight: '90vh', borderRadius: '40px', padding: '60px', overflowY: 'auto' as const, boxShadow: '0 50px 100px rgba(179, 147, 89, 0.25)', border: '1px solid rgba(179, 147, 89, 0.1)' };
+const returnBtn = { background: '#111', color: '#fff', border: 'none', padding: '12px 28px', fontSize: '9px', fontWeight: 'bold', letterSpacing: '3px', cursor: 'pointer', borderRadius: '50px' };
