@@ -132,7 +132,6 @@ export default function PersonalPage() {
            </motion.div>
         </div>
 
-        {/* FEED - COMPACT & ORGANIZED */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
             {posts.map((post) => (
                 <motion.div key={post.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={postCardStyle}>
@@ -151,7 +150,6 @@ export default function PersonalPage() {
                         )}
                     </div>
 
-                    {/* IMAGE CONTAINER - PREVENTS CUTTING */}
                     {post.image_url && (
                       <div style={imageWrapper}>
                         <img 
@@ -164,28 +162,28 @@ export default function PersonalPage() {
                     )}
 
                     <p style={compactCaptionStyle}>{post.caption}</p>
-                    <p style={{ fontSize: '9px', color: '#ccc', marginTop: '10px', textTransform: 'uppercase' }}>{new Date(post.created_at).toLocaleDateString()}</p>
+                    <p style={{ fontSize: '9px', color: '#ccc', marginTop: '10px' }}>{new Date(post.created_at).toLocaleDateString()}</p>
                 </motion.div>
             ))}
         </div>
       </main>
 
-      {/* FULL SCREEN ZOOM */}
+      {/* FULL SCREEN ZOOM (FIXED FOR NO CROPPING) */}
       <AnimatePresence>
         {zoomImage && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setZoomImage(null)} style={zoomOverlayStyle}>
-            <button style={closeZoomBtn}>✕ CLOSE</button>
-            <motion.img initial={{ scale: 0.9 }} animate={{ scale: 1 }} src={zoomImage} style={zoomedImageStyle} />
+            <button style={closeZoomBtn}>✕ EXIT PREVIEW</button>
+            <motion.img initial={{ scale: 0.95 }} animate={{ scale: 1 }} src={zoomImage} style={zoomedImageStyle} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* VAULT MODAL - IMPROVED SCROLLING */}
+      {/* VAULT MODAL */}
       <AnimatePresence>
         {activeVault && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={masterOverlay}>
             <motion.div initial={{ y: 50 }} animate={{ y: 0 }} style={vaultCard}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 10 }}>
+              <div style={stickyHeader}>
                 <h2 style={{ fontFamily: 'serif', fontSize: '24px' }}>{activeVault === "shelf" ? "The Library Shelf" : "My Favourite Melodies"}</h2>
                 <button onClick={() => setActiveVault(null)} style={closeCircleBtn}>✕</button>
               </div>
@@ -227,7 +225,7 @@ export default function PersonalPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={masterOverlay}>
             <motion.div initial={{ y: 20 }} animate={{ y: 0 }} style={creatorCard}>
               <h2 style={{ fontFamily: 'serif', marginBottom: '20px' }}>Entry Creator</h2>
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', overflowX: 'auto', paddingBottom: '10px' }}>
+              <div style={typeTabGroup}>
                 {["post", "book", "music"].map(t => (
                   <button key={t} onClick={() => setCreatorType(t as any)} style={{ ...typeBtn, backgroundColor: creatorType === t ? '#111' : '#f5f5f5', color: creatorType === t ? '#fff' : '#111' }}>{t.toUpperCase()}</button>
                 ))}
@@ -269,81 +267,32 @@ export default function PersonalPage() {
   );
 }
 
-// --- UPDATED STYLES ---
-
-const imageWrapper = {
-  width: '100%',
-  backgroundColor: '#f9f9f9',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  maxHeight: '400px'
-};
-
-const containedImageStyle = {
-  maxWidth: '100%',
-  maxHeight: '400px',
-  objectFit: 'contain' as const, // SHOWS ENTIRE IMAGE
-  cursor: 'zoom-in'
-};
-
-const postCardStyle = { 
-  backgroundColor: '#fff', 
-  border: '1px solid #f0f0eb', 
-  borderRadius: '16px', 
-  padding: '16px',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-};
-
-const zoomOverlayStyle: React.CSSProperties = { 
-  position: 'fixed', 
-  inset: 0, 
-  backgroundColor: 'rgba(0,0,0,0.98)', 
-  zIndex: 2000000, 
-  display: 'flex', 
-  flexDirection: 'column',
-  alignItems: 'center', 
-  justifyContent: 'center', 
-  padding: '20px',
-  cursor: 'zoom-out' 
-};
-
-const zoomedImageStyle: React.CSSProperties = { 
-  maxWidth: '100%', 
-  maxHeight: '85vh', 
-  objectFit: 'contain' as const 
-};
-
-const scrollArea = { 
-  maxHeight: '60vh', 
-  overflowY: 'auto' as const, 
-  paddingRight: '10px' 
-};
-
-const scrollAreaCreator = {
-  maxHeight: '40vh',
-  overflowY: 'auto' as const,
-  paddingRight: '5px'
-};
-
-const closeZoomBtn = { color: '#fff', background: 'none', border: '1px solid #fff', padding: '8px 16px', borderRadius: '20px', fontSize: '10px', marginBottom: '20px', cursor: 'pointer' };
-const closeCircleBtn = { width: '32px', height: '32px', borderRadius: '50%', border: 'none', backgroundColor: '#f5f5f5', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const statusBadge = { fontSize: '9px', padding: '4px 10px', borderRadius: '20px', background: '#fdfcf8', border: '1px solid #eee', color: '#b39359' };
-const homeBtnStyle = { display: 'block', margin: '0 auto 50px', background: '#fff', border: '1px solid #eee', padding: '10px 25px', fontSize: '9px', fontWeight: 'bold' as const, letterSpacing: '3px', cursor: 'pointer', borderRadius: '50px', color: '#999' };
+// --- STYLES ---
+const imageWrapper: React.CSSProperties = { width: '100%', borderRadius: '12px', overflow: 'hidden', display: 'flex', justifyContent: 'center', backgroundColor: 'transparent' };
+const containedImageStyle: React.CSSProperties = { width: '100%', height: 'auto', maxHeight: '500px', objectFit: 'contain', cursor: 'zoom-in' };
+const zoomOverlayStyle: React.CSSProperties = { position: 'fixed', inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.98)', zIndex: 9999999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '10px', cursor: 'zoom-out', backdropFilter: 'blur(20px)' };
+const zoomedImageStyle: React.CSSProperties = { maxWidth: '100%', maxHeight: '95vh', objectFit: 'contain' };
+const closeZoomBtn: React.CSSProperties = { position: 'fixed', top: '30px', right: '30px', background: '#111', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '50px', fontSize: '9px', fontWeight: 'bold', letterSpacing: '2px', cursor: 'pointer' };
+const stickyHeader: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 10, paddingBottom: '10px' };
+const scrollArea: React.CSSProperties = { maxHeight: '60vh', overflowY: 'auto', paddingRight: '10px' };
+const scrollAreaCreator: React.CSSProperties = { maxHeight: '40vh', overflowY: 'auto', paddingRight: '5px' };
+const postCardStyle = { backgroundColor: '#fff', border: '1px solid #f0f0eb', borderRadius: '16px', padding: '16px', marginBottom: '10px' };
 const avatarStyle = { width: '80px', height: '80px', borderRadius: '50%', border: '2px solid #b39359', margin: '0 auto 20px', overflow: 'hidden' };
 const pulseBtnStyle = { padding: '12px 30px', background: '#111', color: '#fff', border: 'none', borderRadius: '50px', fontSize: '10px', fontWeight: 'bold' as const, cursor: 'pointer', marginBottom: '20px' };
 const blockStyle = { padding: '25px', borderRadius: '20px', cursor: 'pointer', textAlign: 'center' as const };
 const labelStyle = { fontSize: '8px', fontWeight: 'bold' as const, letterSpacing: '2px', marginBottom: '10px', display: 'block' };
 const compactCaptionStyle = { fontFamily: 'serif', fontSize: '15px', marginTop: '12px', color: '#333', lineHeight: '1.6' };
 const miniBtn = { background: 'none', border: 'none', fontSize: '9px', fontWeight: 'bold', color: '#ccc', cursor: 'pointer' };
-const masterOverlay = { position: 'fixed' as const, inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.98)', zIndex: 1000000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', backdropFilter: 'blur(10px)' };
+const masterOverlay: React.CSSProperties = { position: 'fixed', inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.98)', zIndex: 1000000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', backdropFilter: 'blur(10px)' };
 const vaultCard = { backgroundColor: '#fff', padding: '40px', borderRadius: '32px', width: '100%', maxWidth: '550px', boxShadow: '0 40px 100px rgba(0,0,0,0.08)' };
-const creatorCard = { backgroundColor: '#fff', padding: '30px', borderRadius: '32px', width: '100%', maxWidth: '450px', boxShadow: '0 40px 100px rgba(0,0,0,0.1)' };
+const creatorCard = { backgroundColor: '#fff', padding: '30px', borderRadius: '32px', width: '100%', maxWidth: '450px' };
 const uploadAreaStyle = { width: '100%', padding: '30px', border: '1px dashed #ddd', borderRadius: '15px', textAlign: 'center' as const, cursor: 'pointer', fontSize: '12px', color: '#999', marginBottom: '15px' };
 const inputStyle = { width: '100%', padding: '12px 0', background: 'none', border: 'none', borderBottom: '1px solid #f0f0f0', fontSize: '16px', fontFamily: 'serif', outline: 'none', marginBottom: '15px' };
 const inputStyleArea = { width: '100%', padding: '12px 0', background: 'none', border: 'none', borderBottom: '1px solid #f0f0f0', fontSize: '16px', fontFamily: 'serif', outline: 'none', marginBottom: '15px', minHeight: '80px', resize: 'none' as const };
 const saveBtn = { flex: 1, padding: '15px', border: 'none', borderRadius: '40px', background: '#111', color: '#fff', fontWeight: 'bold' as const, cursor: 'pointer', fontSize: '10px' };
-const typeBtn = { padding: '8px 16px', border: 'none', borderRadius: '20px', fontSize: '9px', fontWeight: 'bold' as const, cursor: 'pointer', flexShrink: 0 };
+const typeBtn: React.CSSProperties = { padding: '8px 16px', border: 'none', borderRadius: '20px', fontSize: '9px', fontWeight: 'bold', cursor: 'pointer', flexShrink: 0 };
+const typeTabGroup: React.CSSProperties = { display: 'flex', gap: '10px', marginBottom: '25px', overflowX: 'auto', paddingBottom: '10px' };
+const closeCircleBtn = { width: '32px', height: '32px', borderRadius: '50%', border: 'none', backgroundColor: '#f5f5f5', cursor: 'pointer' };
+const statusBadge = { fontSize: '9px', padding: '4px 10px', borderRadius: '20px', background: '#fdfcf8', border: '1px solid #eee', color: '#b39359' };
 const vaultItemStyle = { padding: '15px 0', borderBottom: '1px solid #f9f9f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
+const homeBtnStyle = { display: 'block', margin: '0 auto 50px', background: '#fff', border: '1px solid #eee', padding: '10px 25px', fontSize: '9px', fontWeight: 'bold' as const, letterSpacing: '3px', cursor: 'pointer', borderRadius: '50px', color: '#999' };
