@@ -34,7 +34,7 @@ export default function Navbar() {
       setIsAdmin(session?.user?.email?.toLowerCase() === "phindilesandi07@gmail.com");
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabase.auth]);
 
   // --- SECRET CLICK HANDLER ---
   const handleLogoClick = () => {
@@ -78,25 +78,18 @@ export default function Navbar() {
 
   return (
     <>
-      <nav style={{ 
-        position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 9999, 
-        backgroundColor: '#fdfcf8', borderBottom: '1px solid rgba(0,0,0,0.03)'
-      }}>
-        <div style={{ 
-          maxWidth: '1200px', margin: '0 auto', 
-          display: 'flex', justifyContent: 'space-between', 
-          alignItems: 'center', padding: '15px 40px' 
-        }}>
+      <nav className="fixed top-0 left-0 w-full z-[9999] bg-[var(--background)] border-b border-black/5">
+        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center px-4 md:px-10 py-4 md:py-[15px] gap-6 md:gap-0">
           
           {/* LEFT LINKS */}
-          <div style={{ display: 'flex', gap: '30px', flex: 1 }}>
+          <div className="flex gap-6 md:gap-[30px] flex-1 justify-center md:justify-start order-2 md:order-1 w-full md:w-auto">
             <button onClick={() => router.push("/theology")} style={navLinkStyle}>Theology</button>
             <button onClick={() => router.push("/personal")} style={navLinkStyle}>Personal</button>
           </div>
 
           {/* CENTER: LOGO (NOW WITH CLICK HANDLER) */}
           <div 
-            style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} 
+            className="flex-2 flex flex-col items-center cursor-pointer order-1 md:order-2 w-full md:w-auto"
             onClick={handleLogoClick}
           >
             <motion.div whileHover={{ rotate: 90 }} style={logoCircleStyle}>
@@ -110,7 +103,7 @@ export default function Navbar() {
                   <span style={subLogoStyle}>Jesus is my God</span>
                 </motion.div>
               ) : (
-                <motion.div key="psalm" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} style={{ textAlign: 'center', maxWidth: '500px' }}>
+                <motion.div key="psalm" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center w-[90vw] md:max-w-[500px]">
                   <p style={psalmTextStyle}>"{verse}"</p>
                   <span style={referenceStyle}>{reference}</span>
                 </motion.div>
@@ -119,7 +112,7 @@ export default function Navbar() {
           </div>
 
           {/* RIGHT LINKS */}
-          <div style={{ display: 'flex', gap: '30px', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+          <div className="flex gap-6 md:gap-[30px] items-center flex-1 justify-center md:justify-end order-3 w-full md:w-auto">
             <button onClick={() => router.push("/thoughts")} style={navLinkStyle}>Thoughts</button>
             {isAdmin && <button onClick={() => supabase.auth.signOut()} style={exitBtn}>EXIT ADMIN</button>}
           </div>
@@ -150,7 +143,7 @@ export default function Navbar() {
                 onChange={(e) => setSecretEmail(e.target.value)}
                 style={modalInputStyle}
               />
-              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'center' }}>
                 <button onClick={() => setShowSecretModal(false)} style={cancelBtnStyle}>Cancel</button>
                 <button onClick={handleIdentify} style={unveilBtnStyle}>
                   {loading ? "Sending..." : "Unveil"}
