@@ -4,10 +4,10 @@ import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <div style={{ backgroundColor: '#fdfcf8', minHeight: '100vh', width: '100%' }}>
+    <div className="bg-[var(--background)] min-h-screen w-full">
       <Navbar />
       
-      <main style={{ padding: '280px 20px 100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <main className="flex flex-col items-center px-5 pb-[100px] pt-[180px] md:pt-[280px]">
         <section style={{ maxWidth: '900px', width: '100%', textAlign: 'center' }}>
           
           {/* Hero Section */}
