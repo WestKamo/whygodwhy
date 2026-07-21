@@ -99,7 +99,7 @@ export default function Navbar() {
           </div>
 
           {/* NAV ROW — fixed 3-column grid, never reflows, each link owns exactly 1/3 */}
-          <div className="grid grid-cols-3 items-center w-full mt-5">
+            <div className="grid grid-cols-3 items-center w-full mt-3">
             <div className="flex justify-start">
               <button onClick={() => router.push("/theology")} style={navBtnStyle}>
                 Theology
@@ -162,15 +162,15 @@ const subLogoStyle = { fontSize: '8px', letterSpacing: '4px', color: '#b39359', 
 
 // Bold, button-styled nav link
 const navBtnStyle = {
-  fontSize: '10px',
+  fontSize: '8px',
   fontWeight: 800 as const,
-  letterSpacing: '2px',
+  letterSpacing: '1.5px',
   textTransform: 'uppercase' as const,
   color: '#111',
   background: '#fff',
-  border: '1.5px solid #b39359',
+  border: '1px solid #b39359',
   borderRadius: '999px',
-  padding: '8px 16px',
+  padding: '5px 10px',
   cursor: 'pointer',
   whiteSpace: 'nowrap' as const,
 };
