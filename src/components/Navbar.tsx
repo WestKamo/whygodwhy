@@ -9,8 +9,7 @@ export default function Navbar() {
   const router = useRouter();
   const [showPsalm, setShowPsalm] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  
-  // --- SECRET MODAL STATES ---
+
   const [clickCount, setClickCount] = useState(0);
   const [showSecretModal, setShowSecretModal] = useState(false);
   const [secretEmail, setSecretEmail] = useState("");
@@ -36,32 +35,26 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
-  // --- SECRET CLICK HANDLER ---
   const handleLogoClick = () => {
     const newCount = clickCount + 1;
     setClickCount(newCount);
-    setShowPsalm(!showPsalm); // Keep the Psalm toggle working
+    setShowPsalm(!showPsalm);
 
     if (newCount === 5) {
       setShowSecretModal(true);
       setClickCount(0);
     }
 
-    // Reset counter if user stops clicking for 3 seconds
     const timer = setTimeout(() => setClickCount(0), 3000);
     return () => clearTimeout(timer);
   };
 
-  // --- LOGIN LOGIC ---
   const handleIdentify = async () => {
     if (secretEmail.trim().toLowerCase() === "phindilesandi07@gmail.com") {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({ 
+      const { error } = await supabase.auth.signInWithOtp({
         email: secretEmail.trim(),
-        options: { 
-          // Crucial for Vercel: redirects to your callback route
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        }
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
       });
       setLoading(false);
       if (!error) {
@@ -79,17 +72,11 @@ export default function Navbar() {
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-[9999] bg-[var(--background)] border-b border-black/5">
-        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center px-4 md:px-10 py-4 md:py-[15px] gap-6 md:gap-0">
-          
-          {/* LEFT LINKS */}
-          <div className="flex gap-6 md:gap-[30px] flex-1 justify-center md:justify-start order-2 md:order-1 w-full md:w-auto">
-            <button onClick={() => router.push("/theology")} style={navLinkStyle}>Theology</button>
-            <button onClick={() => router.push("/personal")} style={navLinkStyle}>Personal</button>
-          </div>
+        <div className="max-w-[1200px] mx-auto px-4 md:px-10 py-4 md:py-[15px]">
 
-          {/* CENTER: LOGO (NOW WITH CLICK HANDLER) */}
-          <div 
-            className="flex-2 flex flex-col items-center cursor-pointer order-1 md:order-2 w-full md:w-auto"
+          {/* BRAND ROW — always its own row, centered, on every device */}
+          <div
+            className="flex flex-col items-center cursor-pointer w-full"
             onClick={handleLogoClick}
           >
             <motion.div whileHover={{ rotate: 90 }} style={logoCircleStyle}>
@@ -111,10 +98,26 @@ export default function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* RIGHT LINKS */}
-          <div className="flex gap-6 md:gap-[30px] items-center flex-1 justify-center md:justify-end order-3 w-full md:w-auto">
-            <button onClick={() => router.push("/thoughts")} style={navLinkStyle}>Thoughts</button>
-            {isAdmin && <button onClick={() => supabase.auth.signOut()} style={exitBtn}>EXIT ADMIN</button>}
+          {/* NAV ROW — fixed 3-column grid, never reflows, each link owns exactly 1/3 */}
+          <div className="grid grid-cols-3 items-center w-full mt-5">
+            <div className="flex justify-start">
+              <button onClick={() => router.push("/theology")} style={navBtnStyle}>
+                Theology
+              </button>
+            </div>
+
+            <div className="flex justify-center">
+              <button onClick={() => router.push("/personal")} style={navBtnStyle}>
+                Personal
+              </button>
+            </div>
+
+            <div className="flex justify-end items-center gap-2">
+              <button onClick={() => router.push("/thoughts")} style={navBtnStyle}>
+                Thoughts
+              </button>
+              {isAdmin && <button onClick={() => supabase.auth.signOut()} style={exitBtn}>EXIT</button>}
+            </div>
           </div>
         </div>
 
@@ -124,21 +127,12 @@ export default function Navbar() {
       {/* --- THE SECRET MODAL --- */}
       <AnimatePresence>
         {showSecretModal && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            style={modalOverlayStyle}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              style={modalContentStyle}
-            >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={modalOverlayStyle}>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} style={modalContentStyle}>
               <h3 style={{ fontFamily: 'serif', letterSpacing: '2px', marginBottom: '15px' }}>IDENTIFY SEEKER</h3>
-              <input 
-                type="email" 
-                placeholder="Enter Secret Email" 
+              <input
+                type="email"
+                placeholder="Enter Secret Email"
                 value={secretEmail}
                 onChange={(e) => setSecretEmail(e.target.value)}
                 style={modalInputStyle}
@@ -157,20 +151,34 @@ export default function Navbar() {
   );
 }
 
-// RESTORED STYLES (NO CHANGES)
-const logoCircleStyle = { 
-  width: '32px', height: '32px', border: '1px solid #b39359', 
-  borderRadius: '50%', display: 'flex', alignItems: 'center', 
-  justifyContent: 'center', marginBottom: '8px' 
+// STYLES
+const logoCircleStyle = {
+  width: '32px', height: '32px', border: '1px solid #b39359',
+  borderRadius: '50%', display: 'flex', alignItems: 'center',
+  justifyContent: 'center', marginBottom: '8px'
 };
 const logoTextStyle = { fontSize: '20px', fontFamily: 'serif', letterSpacing: '5px', fontWeight: 'bold', color: '#111' };
 const subLogoStyle = { fontSize: '8px', letterSpacing: '4px', color: '#b39359', display: 'block', marginTop: '4px', textTransform: 'uppercase' as const };
-const navLinkStyle = { fontSize: '10px', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' as const, color: '#aaa', background: 'none', border: 'none', cursor: 'pointer' };
+
+// Bold, button-styled nav link
+const navBtnStyle = {
+  fontSize: '10px',
+  fontWeight: 800 as const,
+  letterSpacing: '2px',
+  textTransform: 'uppercase' as const,
+  color: '#111',
+  background: '#fff',
+  border: '1.5px solid #b39359',
+  borderRadius: '999px',
+  padding: '8px 16px',
+  cursor: 'pointer',
+  whiteSpace: 'nowrap' as const,
+};
+
 const psalmTextStyle = { margin: 0, fontSize: '11px', fontStyle: 'italic', color: '#b39359', lineHeight: '1.4' };
 const referenceStyle = { fontSize: '8px', fontWeight: 'bold', color: '#ccc', marginTop: '4px', display: 'block' };
 const exitBtn = { background: 'none', border: '1px solid #ff4444', color: '#ff4444', padding: '5px 10px', fontSize: '7px', fontWeight: 'bold', borderRadius: '4px', cursor: 'pointer' };
 
-// --- MODAL STYLES ---
 const modalOverlayStyle: React.CSSProperties = {
   position: 'fixed', inset: 0, backgroundColor: 'rgba(253, 252, 248, 0.95)',
   zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)'
